@@ -48,7 +48,7 @@ public class BlobTester {
         expect(!Blob.blobExists(h2), "blob h2 should be deleted after reset");
         src.delete();
 
-        System.out.println("BlobTester: All tests passed ✅");
+        System.out.println("All tests passed");
     }
 
     public static void expect(boolean cond, String msg) {
