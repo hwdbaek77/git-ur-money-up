@@ -56,10 +56,10 @@ public class GitTester {
     }
 
     public static void assertPresentAll() {
-        if(!isDir("git"))         throw new RuntimeException("Git directory not present");
+        if(!isDir("git"))  throw new RuntimeException("Git directory not present");
         if(!isDir("git/objects")) throw new RuntimeException("Git objects directory not present");
-        if(!isFile("git/index"))  throw new RuntimeException("Git index file not present");
-        if(!isFile("git/HEAD"))   throw new RuntimeException("Git HEAD file not present");
+        if(!isFile("git/index")) throw new RuntimeException("Git index file not present");
+        if(!isFile("git/HEAD")) throw new RuntimeException("Git HEAD file not present");
     }
 
     public static void assertMissingAll() {
