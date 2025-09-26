@@ -70,3 +70,26 @@ GitTester: All tests passed
 
 ### Edge cases
 - If the program fails to create a file or directory, it throws an exception.
+
+## Sha1
+
+### What is this
+
+This is a java program that calculates the SHA-1 hash of a string.
+
+### How it works
+
+- It uses the MessageDigest class to calculate the hash.
+- It converts the hash to a hexadecimal string.
+- It uses the String.format() method to add leading zeros to the hash.
+- It returns the hexadecimal string.
+- It throws an exception if the hash cannot be calculated.
+- It throws an exception if the hash cannot be converted to a hexadecimal string.
+- It throws an exception if the MessageDigest class is not available.
+- It throws an exception if the SHA-1 algorithm is not available.
+- It throws an exception if the file cannot be read.
+
+### Challenges
+
+- The program isn't yet secure. It doesn't check the hash of the file contents.
+- It always uses UTF-8 encoding. It should use the encoding of the file being hashed.
