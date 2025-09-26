@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.charset.*;
+import java.nio.file.Files.*;
 
 public class Index {
     public static String gitDir = "git";
@@ -15,7 +16,24 @@ public class Index {
 
         // Create the blob and add it to the index
         String hash = Blob.create(src);
-        String line = hash + " " + src.getName();
+        
+        // Create the index line
+        String relPath;
+        try {
+            File base = new File(".").getCanonicalFile();
+            File abs = src.getCanonicalFile();
+            String candidate = base.toURI().relativize(abs.toURI()).getPath();
+            if (candidate == null || candidate.isEmpty()) {
+                // Fallback to original name if failed
+                candidate = src.getPath();
+            }
+            // Normalize separators to forward slashes for consistency across OSes
+            relPath = candidate.replace('\\', '/');
+        } catch (IOException e) {
+            // Fallback to oriagnl name if failed
+            relPath = src.getPath().replace('\\', '/');
+        }
+        String line = hash + " " + relPath;
 
         // Write the line to the index file
         File idx = new File(indexPath);

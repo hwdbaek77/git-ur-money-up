@@ -69,7 +69,7 @@ public class IndexTester {
         // Delete the sample files
         for (File f : samples) f.delete();
 
-        System.out.println("IndexTester: All tests passed ✅");
+        System.out.println("All tests passed");
     }
 
     // Helper methods
