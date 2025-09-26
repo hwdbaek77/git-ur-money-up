@@ -1,1 +1,72 @@
-# git ur money up
+
+# Git
+
+### What is this
+
+This is a java program that initializes a git-like repository in a folder named git/. It creates:
+
+- git/
+- git/objects/
+- git/index
+- git/HEAD
+
+### To run
+
+From your project root (where `Git.java` lives):
+
+- java Git.java
+- java Git
+
+### Expected output
+
+- First time (creates anything missing): Git Repository Created Successfully
+- Second time (already exists): Git Repository Already Exists
+- If something fails to create: Git Repository Creation Failed
+
+### Methods
+
+- public static void main(String[] args): Creates the repository
+- public static boolean mkdir(File dir): Creates a directory if it doesn't exist
+- public static boolean touch(File file): Creates a file if it doesn't exist
+- public static boolean existsDir(File dir): Checks if a directory exists
+- public static boolean existsFile(File file): Checks if a file exists
+
+### Challenges
+
+- Needed to ensure `git/` and `git/objects/` are directories and `git/index` and `git/HEAD` are files. If something else existed with the same name, creation had to fail cleanly instead of overwriting.
+- The program should run multiple times without breaking anything. This required an early check (`existsDir` / `existsFile`) so it only creates missing pieces and simply reports when everything is already set up.
+- The `touch` method had to create parent directories before files to avoid `IOException` when a parent didn’t exist.
+- If any step failed (permissions, conflicts), the code needed to clearly print a failure message so it’s obvious why initialization didn’t complete.
+
+## Git Tester
+
+### What is this
+
+This is a java program that tests the functionality of the `Git` class. It creates a git repository, then deletes it, then creates it again. It then checks that all the files and directories are present.
+
+### To run
+
+From your project root (where `GitTester.java` lives):
+- javac Git.java GitTester.java
+- java GitTester
+
+### Expected output
+
+GitTester: All tests passed
+
+### Methods
+- public static void runGit(): Creates the repository
+- public static void deleteGit(): Deletes the repository
+- public static void deleteRecursive(File f): Deletes a file or directory recursively
+- public static boolean isDir(String path): Checks if a directory exists
+- public static boolean isFile(String path): Checks if a file exists
+- public static void assertPresentAll(): Checks that all the files and directories are present
+- public static void assertMissingAll(): Checks that all the files and directories are missing
+
+### Methodology
+- deleteGit() removes any existing git/ directory and assertMissingAll() verifies nothing remains.
+- runGit() calls Git.main() to create the structure. assertPresentAll() confirms all parts exist, and a second run ensures nothing breaks if executed twice.
+- Deletes only git/index, confirms other items remain, reruns runGit() to ensure the missing file is restored.
+
+### Edge cases
+- If the program fails to create a file or directory, it throws an exception.
