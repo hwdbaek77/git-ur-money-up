@@ -39,6 +39,33 @@ public class Blob {
         }
     }
 
+    // Create a BLOB file without an actual file as input; just a byte array of data
+    public static String create(byte[] data) {
+        // Create the blob
+        try {
+            ensureObjectsDir();
+
+            // Copy the file to the objects directory
+            if (!compress) {
+                String hash = sha1OfBytes(data);
+                File out = new File(objectsDir, hash);
+                if(!out.exists()) Files.write(out.toPath(), data);
+                return hash;
+            }
+
+            // Compress the file and create a new blob
+            else {
+                byte[] zipped = deflate(data);
+                String hash = sha1OfBytes(zipped);
+                File out = new File(objectsDir, hash);
+                if(!out.exists()) Files.write(out.toPath(), zipped);
+                return hash;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Blob.create: failed to write to file");
+        }
+    }
+
     // Check if a blob exists
     public static boolean blobExists(String hash) {
         // Check if the hash is null or empty
