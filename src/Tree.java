@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Tree {
     // Creates a tree file with the given lines
@@ -33,19 +34,63 @@ public class Tree {
     public static void createTrees() {
         try {
             Index.ensureIndexFile();
+            String workingList = "";
             BufferedReader br = new BufferedReader(new FileReader("git/index"));
             while (br.ready()) {
-                String line = br.readLine();
-                String path = line.split(" ")[1];
-                String[] folders = path.split("/");
-                if (folders.length > 1) {
-                    
-                }
+                workingList += "blob " + br.readLine();
             }
             br.close();
+
+            HashMap<String, ArrayList<String>> trees = new HashMap<>();
+
+            while (needToMakeTrees(workingList)) {
+                int lineIndex = findMostNestedFile(workingList);
+                String[] lines = workingList.split("\n");
+                String line = lines[lineIndex];
+                String path = line.split(" ")[2];
+                int lastSlash = path.lastIndexOf("/");
+                String folder = path.substring(0, lastSlash);
+                String file = path.substring(lastSlash + 1);
+                if (trees.containsKey(folder)) {
+                    trees.get(folder).add(file);
+                } else {
+                    trees.put(folder, new ArrayList<>());
+                    trees.get(folder).add(file);
+                    // TODO: add tree to working list
+                }
+
+                workingList = "";
+                for (int i = 0; i < lines.length; i++) {
+                    if (i != lineIndex) {
+                        workingList += lines[i];
+                    }
+                    if (i != lines.length - 1) {
+                        workingList += "\n";
+                    }
+                }
+            }
         } catch (Exception e) {
             System.out.println("Failed to create trees!");
             e.printStackTrace();
         }
+    }
+
+    public static boolean needToMakeTrees(String workingList) {
+        return workingList.contains("/");
+    }
+
+    public static int findMostNestedFile(String workingList) {
+        String[] lines = workingList.split("\n");
+        int mostSlashes = -1;
+        int lineWithMostSlashes = -1;
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            int numSlashes = line.split("/").length - 1;
+            if (numSlashes > mostSlashes) {
+                lineWithMostSlashes = i;
+                mostSlashes = numSlashes;
+            }
+        }
+        return lineWithMostSlashes;
     }
 }
