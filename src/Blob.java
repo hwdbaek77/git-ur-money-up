@@ -1,6 +1,7 @@
 import java.io.*;
 import java.nio.file.*;
 import java.security.*;
+import java.util.stream.Stream;
 import java.util.zip.*;
 
 public class Blob {
@@ -39,6 +40,17 @@ public class Blob {
         }
     }
 
+    // For some cases, we need a version of the function that cannot throw an error
+    public static String safeCreateAndAdd(File src) {
+        try {
+            create(src);
+            return Index.safeAdd(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Create a BLOB file without an actual file as input; just a byte array of data
     public static String create(byte[] data) {
         // Create the blob
@@ -63,6 +75,20 @@ public class Blob {
             }
         } catch (IOException e) {
             throw new RuntimeException("Blob.create: failed to write to file");
+        }
+    }
+
+    // Creates BLOBs for each file in the given directory and in all subdirectories
+    // Also stages the files
+    public static void createDirectory(String directory) {
+        try {
+            Stream<File> fileStream =  Files.walk(Paths.get(directory))
+                .filter(Files::isRegularFile)
+                .map(Path::toFile);
+            fileStream.forEach(Blob::safeCreateAndAdd);
+            fileStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
