@@ -93,3 +93,22 @@ This is a java program that calculates the SHA-1 hash of a string.
 
 - The program isn't yet secure. It doesn't check the hash of the file contents.
 - It always uses UTF-8 encoding. It should use the encoding of the file being hashed.
+
+## Tree
+
+### What is this
+
+Tree.java is capable of taking in an index file and generating all associated tree files, proceeding to hash their contents and place them in the object directory. A tree file contains a list of all the BLOBs and other trees in a given directory (directories are, in the end, just trees).
+
+### How it works
+
+- It iterates over the index file and generates a "working list" in memory, prefixing all files with the word "blob"
+- It finds the line in the working list with the most slashes (i.e. the most nested file that has been staged)
+- It adds that file to the tree file for its parent folder, which is stored in memory for now
+- It removes that file from the working list
+- Once all files at a given level of "nestedness" have been dealt with, we generate all tree files in memory and add them to the working list with the prefix "tree"
+- Rinse and repeat until the working list is empty
+
+### Challenges
+
+- All these trees are really just floating in space, with nothing referencing them...
