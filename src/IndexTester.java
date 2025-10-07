@@ -41,7 +41,10 @@ public class IndexTester {
 
             // Check that the index entry is correct
             for (String line : lines) {
-                if (line.equals(expected)) { found = true; break; }
+                if (line.equals(expected)) {
+                    found = true;
+                    break;
+                }
             }
 
             // Check that the index entry is correct
@@ -63,11 +66,15 @@ public class IndexTester {
         boolean anyBlob = false;
 
         // Check that the objects directory is empty
-        if (kids != null) for (File k : kids) if (k.isFile()) anyBlob = true;
+        if (kids != null)
+            for (File k : kids)
+                if (k.isFile())
+                    anyBlob = true;
         expect(!anyBlob, "objects directory not cleared");
 
         // Delete the sample files
-        for (File f : samples) f.delete();
+        for (File f : samples)
+            f.delete();
 
         System.out.println("All tests passed");
     }
@@ -78,12 +85,15 @@ public class IndexTester {
         File f = new File(name);
 
         // Write the content to the file
-        try (FileWriter w = new FileWriter(f, false)) { w.write(content); }
+        try (FileWriter w = new FileWriter(f, false)) {
+            w.write(content);
+        }
         return f;
     }
 
     // Assert helper method
     private static void expect(boolean cond, String msg) {
-        if (!cond) throw new RuntimeException("ASSERT FAIL: " + msg);
+        if (!cond)
+            throw new RuntimeException("ASSERT FAIL: " + msg);
     }
 }

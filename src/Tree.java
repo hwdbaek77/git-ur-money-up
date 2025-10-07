@@ -1,15 +1,13 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 public class Tree {
     // Creates a tree file with the given lines
-    // The file will be in the objects folder and its name will be the SHA-1 hash of its contents
+    // The file will be in the objects folder and its name will be the SHA-1 hash of
+    // its contents
     // Returns the SHA-1 hash of the file's contents (its name)
     public static String addTree(ArrayList<String> entries) {
         ArrayList<Byte> bytes = new ArrayList<>();
@@ -63,7 +61,7 @@ public class Tree {
                     }
                     trees.clear();
                 }
-                
+
                 String[] components = line.split(" ");
                 String path = components[2];
                 String fileType = components[0];
@@ -90,7 +88,7 @@ public class Tree {
                 lastNumberSlashes = numberSlashes;
             }
             for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
-                String key = entry.getKey();
+                // String key = entry.getKey();
                 ArrayList<String> value = entry.getValue();
                 addTree(value);
             }

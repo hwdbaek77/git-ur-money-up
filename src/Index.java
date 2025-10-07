@@ -1,6 +1,5 @@
 import java.io.*;
 import java.nio.charset.*;
-import java.nio.file.Files.*;
 
 public class Index {
     public static String gitDir = "git";
@@ -10,13 +9,14 @@ public class Index {
     // Add a file to the index
     public static String add(File src) throws Exception {
         // Check if the file exists
-        if (src == null || !src.isFile()) throw new IllegalArgumentException("Index.add: source is null or not a file");
+        if (src == null || !src.isFile())
+            throw new IllegalArgumentException("Index.add: source is null or not a file");
         Blob.ensureObjectsDir();
         ensureIndexFile();
 
         // Create the blob and add it to the index
         String hash = Blob.create(src);
-        
+
         // Create the index line
         String relPath;
         try {
@@ -37,12 +37,14 @@ public class Index {
 
         // Write the line to the index file
         File idx = new File(indexPath);
-        if (!idx.exists()) ensureIndexFile();
+        if (!idx.exists())
+            ensureIndexFile();
 
         // Add a newline if needed
         boolean needsSep = newline(idx);
         try (FileOutputStream out = new FileOutputStream(idx, true)) {
-            if (needsSep) out.write('\n');
+            if (needsSep)
+                out.write('\n');
             out.write(line.getBytes(StandardCharsets.UTF_8));
         }
 
@@ -62,20 +64,24 @@ public class Index {
     // Ensure that the index file exists
     public static void ensureIndexFile() throws Exception {
         File git = new File(gitDir);
-        if (!git.exists() && !git.mkdirs()) throw new RuntimeException("Failed to create git dir");
+        if (!git.exists() && !git.mkdirs())
+            throw new RuntimeException("Failed to create git dir");
         File idx = new File(indexPath);
         if (!idx.exists()) {
-            if (!idx.createNewFile()) throw new RuntimeException("Failed to create index");
+            if (!idx.createNewFile())
+                throw new RuntimeException("Failed to create index");
         }
 
         // Check if the index file is a file
-        if (!idx.isFile()) throw new RuntimeException("index path is not a file");
+        if (!idx.isFile())
+            throw new RuntimeException("index path is not a file");
     }
 
     // Check if the index file needs a newline at the end
     public static boolean newline(File idx) throws Exception {
         // Check if the index file exists
-        if (!idx.exists() || idx.length() == 0) return false;
+        if (!idx.exists() || idx.length() == 0)
+            return false;
 
         // Read the last byte of the index file
         try (RandomAccessFile raf = new RandomAccessFile(idx, "r")) {
@@ -96,7 +102,8 @@ public class Index {
         // Delete all blobs
         if (kids != null) {
             for (File k : kids) {
-                if (k.isFile()) k.delete();
+                if (k.isFile())
+                    k.delete();
             }
         }
 

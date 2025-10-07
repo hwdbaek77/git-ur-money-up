@@ -1,5 +1,4 @@
 import java.io.*;
-import java.nio.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.security.*;
@@ -12,7 +11,7 @@ public class Sha1 {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] digest = md.digest(s.getBytes(StandardCharsets.UTF_8));
             return bytesToHex(digest);
-        } catch(NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
@@ -31,7 +30,8 @@ public class Sha1 {
     public static String bytesToHex(byte[] bytes) {
         // Convert the byte array to a hexadecimal string
         StringBuilder sb = new StringBuilder();
-        for(byte b : bytes) sb.append(String.format("%02x", b));
+        for (byte b : bytes)
+            sb.append(String.format("%02x", b));
         return sb.toString();
     }
 }
