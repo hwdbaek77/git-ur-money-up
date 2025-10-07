@@ -49,6 +49,16 @@ public class Index {
         return hash;
     }
 
+    // For some cases, we need a version of the function that cannot throw an error
+    public static String safeAdd(File src) {
+        try {
+            return add(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Ensure that the index file exists
     public static void ensureIndexFile() throws Exception {
         File git = new File(gitDir);
