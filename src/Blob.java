@@ -2,11 +2,13 @@ import java.io.*;
 import java.nio.file.*;
 import java.security.*;
 import java.util.zip.*;
+import java.util.*;
 
 public class Blob {
     public static boolean compress = false;
     public static String gitDir = "git";
     public static String objectsDir = gitDir + "/objects";
+    public static String indexFile = gitDir + "/index";
 
     // Create a blob from a file
     public static String create(File src) throws Exception {
@@ -17,23 +19,24 @@ public class Blob {
         try {
             ensureObjectsDir();
 
-            // Copy the file to the objects directory
+            String hash;
             if (!compress) {
-                String hash = Sha1.ofFile(src);
+                hash = Sha1.ofFile(src);
                 File out = new File(objectsDir, hash);
                 if(!out.exists()) Files.copy(src.toPath(), out.toPath());
-                return hash;
             }
-
             // Compress the file and create a new blob
             else {
                 byte[] raw = Files.readAllBytes(src.toPath());
                 byte[] zipped = deflate(raw);
-                String hash = sha1OfBytes(zipped);
+                hash = sha1OfBytes(zipped);
                 File out = new File(objectsDir, hash);
                 if(!out.exists()) Files.write(out.toPath(), zipped);
-                return hash;
             }
+
+            // Update index mapping: path -> hash
+            updateIndex(src, hash);
+            return hash;
         } catch (IOException e) {
             throw new RuntimeException("Blob.create: failed to copy file");
         }
@@ -121,5 +124,90 @@ public class Blob {
         } catch (Exception e) {
             throw new RuntimeException("SHA-1 not available", e); // Should never happen
         }
+    }
+
+    // Ensure the index file exists and is a regular file
+    public static void ensureIndexFile() {
+        File idx = new File(indexFile);
+        File parent = idx.getParentFile();
+        if (parent != null && !parent.exists()) {
+            if (!parent.mkdirs()) throw new RuntimeException("Failed to create git directory");
+        }
+        if (idx.exists() && idx.isDirectory()) throw new RuntimeException("index path is a directory");
+        if (!idx.exists()) {
+            try {
+                if (!idx.createNewFile()) throw new RuntimeException("Failed to create index file");
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create index file", e);
+            }
+        }
+    }
+
+    // Read index into a path->hash map (order preserved)
+    public static Map<String, String> readIndex() {
+        ensureIndexFile();
+        Map<String, String> map = new LinkedHashMap<>();
+        Path p = Paths.get(indexFile);
+        try {
+            if (!Files.exists(p)) return map;
+            for (String line : Files.readAllLines(p)) {
+                if (line == null) continue;
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) continue;
+                int sep = line.lastIndexOf('\t');
+                if (sep < 0) sep = line.lastIndexOf(' ');
+                if (sep <= 0 || sep >= line.length() - 1) continue;
+                String path = line.substring(0, sep);
+                String hash = line.substring(sep + 1).trim();
+                if (!hash.isEmpty()) map.put(path, hash);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read index", e);
+        }
+        return map;
+    }
+
+    // Write index map atomically
+    public static void writeIndex(Map<String, String> map) {
+        ensureIndexFile();
+        Path idx = Paths.get(indexFile);
+        Path tmp = idx.resolveSibling("index.tmp");
+        List<String> lines = new ArrayList<>();
+        for (Map.Entry<String, String> e : map.entrySet()) {
+            lines.add(e.getKey() + "\t" + e.getValue());
+        }
+        try {
+            Files.write(tmp, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            try {
+                Files.move(tmp, idx, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException ex) {
+                Files.move(tmp, idx, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write index", e);
+        }
+    }
+
+    // Update or add mapping from file path to blob hash
+    public static void updateIndex(File src, String hash) { updateIndex(src == null ? null : src.getPath(), hash); }
+    public static void updateIndex(String path, String hash) {
+        if (path == null || path.isEmpty() || hash == null || hash.isEmpty()) return;
+        Map<String, String> map = readIndex();
+        map.put(path, hash);
+        writeIndex(map);
+    }
+
+    // Lookup mapping
+    public static String getIndexHash(String path) {
+        if (path == null) return null;
+        Map<String, String> map = readIndex();
+        return map.get(path);
+    }
+
+    // Remove mapping
+    public static void removeIndex(String path) {
+        if (path == null) return;
+        Map<String, String> map = readIndex();
+        if (map.remove(path) != null) writeIndex(map);
     }
 }
