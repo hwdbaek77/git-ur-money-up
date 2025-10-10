@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Arrays;
 
 public class Tree {
     // Creates a tree file with the given lines
@@ -31,8 +33,9 @@ public class Tree {
     }
 
     // Scans the index file for directories and creates tree files for all of them
-    public static void createTrees() {
+    public static String createTrees() {
         try {
+            String mostRecent = "";
             Index.ensureIndexFile();
             String workingList = "";
             BufferedReader br = new BufferedReader(new FileReader("git/index"));
@@ -57,7 +60,8 @@ public class Tree {
                     for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
                         String key = entry.getKey();
                         ArrayList<String> value = entry.getValue();
-                        linesArray.add("tree " + addTree(value) + " " + key);
+                        mostRecent = addTree(value);
+                        linesArray.add("tree " + mostRecent + " " + key);
                     }
                     trees.clear();
                 }
@@ -92,10 +96,18 @@ public class Tree {
                 ArrayList<String> value = entry.getValue();
                 addTree(value);
             }
+            ArrayList<String> rootFiles = new ArrayList<String>();
+            for (File f : new File("./").listFiles()) {
+                rootFiles.add("blob" + Sha1.ofFile(f) + f.getName());
+            }
+            addTree(rootFiles);
+
             trees.clear();
+            return mostRecent;
         } catch (Exception e) {
             System.out.println("Failed to create trees!");
             e.printStackTrace();
+            return "Something went wrong";
         }
     }
 
