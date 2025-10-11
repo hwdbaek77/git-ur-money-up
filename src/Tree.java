@@ -88,13 +88,35 @@ public class Tree {
                 }
                 lastNumberSlashes = numberSlashes;
             }
-            for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
-                // String key = entry.getKey();
-                ArrayList<String> value = entry.getValue();
-                recent = addTree(value);
+
+            // AI did this
+            ArrayList<String> rootEntries = new ArrayList<>();
+            // include any remaining blobs/entries from workingList
+            if (workingList != null && !workingList.trim().isEmpty()) {
+                String[] finalLines = workingList.split("\n");
+                for (String l : finalLines) {
+                    if (l.trim().isEmpty())
+                        continue;
+                    rootEntries.add(l);
+                }
             }
+            // add any remaining trees (as tree <hash> <name>) into the root
+            for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
+                String key = entry.getKey();
+                ArrayList<String> value = entry.getValue();
+                rootEntries.add("tree " + addTree(value) + " " + key);
+            }
+            recent = addTree(rootEntries);
             trees.clear();
             return recent;
+            //
+            // for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
+            // // String key = entry.getKey();
+            // ArrayList<String> value = entry.getValue();
+            // recent = addTree(value);
+            // }
+            // trees.clear();
+            // return recent;
         } catch (Exception e) {
             System.out.println("Failed to create trees!");
             e.printStackTrace();

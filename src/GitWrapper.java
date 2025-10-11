@@ -5,6 +5,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 
 public class GitWrapper {
+    private String currentRootTreeHash = "";
+
     /**
      * Initializes a new Git repository.
      * This method creates the necessary directory structure
@@ -13,7 +15,8 @@ public class GitWrapper {
     public void init() throws Exception {
         Git.initRepo();
         addFileRecursive(new File("./"));
-        Tree.createTrees();
+        currentRootTreeHash = Tree.createTrees();
+        commit("Git", "Initial Commit");
     };
 
     // adds the given file AND adds all subfiles
@@ -48,7 +51,6 @@ public class GitWrapper {
     public void add(String filePath) throws Exception {
         Blob.create(new File(filePath));
         Index.add(new File(filePath));
-        Tree.createTrees();
     };
 
     /**
@@ -75,10 +77,9 @@ public class GitWrapper {
         addFileRecursive(new File("./"));
         Tree.createTrees();
 
-        String currentRootTree = Tree.createTrees();
-
-        String commit = "tree: " + currentRootTree + "\n" +
-                "parent: " + currentRootTree + "\n" +
+        currentRootTreeHash = Tree.createTrees();
+        String commit = "tree: " + currentRootTreeHash + "\n" +
+                "parent: " + Files.readString(Paths.get("git/HEAD")) + "\n" +
                 "author: " + author + "\n" +
                 "date: " + LocalDate.now() + "\n" +
                 "summary: " + message;
