@@ -60,8 +60,8 @@ public class Tree {
                     for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
                         String key = entry.getKey();
                         ArrayList<String> value = entry.getValue();
-                        mostRecent = addTree(value);
-                        linesArray.add("tree " + mostRecent + " " + key);
+                        recent = addTree(value);
+                        linesArray.add("tree " + recent + " " + key);
                     }
                     trees.clear();
                 }
@@ -112,7 +112,7 @@ public class Tree {
             recent = addTree(rootEntries);
             trees.clear();
             return recent;
-            //
+            // previously Chase coded this which didn't add root trees:
             // for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
             // // String key = entry.getKey();
             // ArrayList<String> value = entry.getValue();
