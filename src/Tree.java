@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Arrays;
 
 public class Tree {
     // Creates a tree file with the given lines
@@ -58,7 +60,8 @@ public class Tree {
                     for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
                         String key = entry.getKey();
                         ArrayList<String> value = entry.getValue();
-                        linesArray.add("tree " + addTree(value) + " " + key);
+                        mostRecent = addTree(value);
+                        linesArray.add("tree " + mostRecent + " " + key);
                     }
                     trees.clear();
                 }

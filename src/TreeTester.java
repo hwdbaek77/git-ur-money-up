@@ -13,6 +13,7 @@ public class TreeTester {
         File file = new File("testDir/apples/info.ini");
         File file2 = new File("testDir/srx/docs/README.txt");
         File file3 = new File("testDir/drive.txt");
+
         try {
             file.createNewFile();
             String contents = "informative information";

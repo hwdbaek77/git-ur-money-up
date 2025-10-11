@@ -2,6 +2,10 @@ import java.io.*;
 
 public class Git {
     public static void main(String[] args) {
+        initRepo(); // initialize the repo that we're in
+    }
+
+    public static void initRepo() {
         // Root "git" directory"
         File gitDir = new File("git");
         File objectsDir = new File(gitDir, "objects");
@@ -26,7 +30,6 @@ public class Git {
             System.out.println("Git Repository Created Successfully");
         else
             System.out.println("Git Repository Creation Failed");
-
     }
 
     public static void initRepo() {

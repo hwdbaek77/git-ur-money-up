@@ -16,6 +16,10 @@ public class Index {
         // Check if the file exists
         if (src == null || !src.isFile())
             throw new IllegalArgumentException("Index.add: source is null or not a file");
+
+        if (Files.readString(new File(indexPath).toPath()).contains(Sha1.ofFile(src))) { // don't re-add files
+            return Sha1.ofFile(src);
+        }
         Blob.ensureObjectsDir();
         ensureIndexFile();
 
