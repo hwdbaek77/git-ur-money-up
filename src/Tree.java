@@ -92,34 +92,30 @@ public class Tree {
                 lastNumberSlashes = numberSlashes;
             }
 
-            // AI did this
-            ArrayList<String> rootEntries = new ArrayList<>();
-            // include any remaining blobs/entries from workingList
-            if (workingList != null && !workingList.trim().isEmpty()) {
-                String[] finalLines = workingList.split("\n");
-                for (String l : finalLines) {
-                    if (l.trim().isEmpty())
-                        continue;
-                    rootEntries.add(l);
+            // Joe's fix of createtrees() to add root tree and return correct things
+            ArrayList<String> rootStuff = new ArrayList<>();
+            // find remaining blob
+            if (workingList != null && !workingList.isEmpty()) {
+                String[] workingListLines = workingList.split("\n");
+                for (String line : workingListLines) {
+                    rootStuff.add(line);
                 }
             }
-            // add any remaining trees (as tree <hash> <name>) into the root
+            // find remaining trees
             for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
                 String key = entry.getKey();
                 ArrayList<String> value = entry.getValue();
-                rootEntries.add("tree " + addTree(value) + " " + key);
+                rootStuff.add("tree " + addTree(value) + " " + key);
+                recent = addTree(rootStuff);
             }
-            recent = addTree(rootEntries);
-            trees.clear();
-            return recent;
-            // previously Chase coded this which didn't add root trees:
+            // previously Chase just had this which didn't add root trees:
             // for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
             // // String key = entry.getKey();
             // ArrayList<String> value = entry.getValue();
             // recent = addTree(value);
             // }
-            // trees.clear();
-            // return recent;
+            trees.clear();
+            return recent;
         } catch (Exception e) {
             System.out.println("Failed to create trees!");
             e.printStackTrace();
