@@ -31,8 +31,9 @@ public class Tree {
     }
 
     // Scans the index file for directories and creates tree files for all of them
-    public static void createTrees() {
+    public static String createTrees() {
         try {
+            String recent = "";
             Index.ensureIndexFile();
             String workingList = "";
             BufferedReader br = new BufferedReader(new FileReader("git/index"));
@@ -90,12 +91,14 @@ public class Tree {
             for (Entry<String, ArrayList<String>> entry : trees.entrySet()) {
                 // String key = entry.getKey();
                 ArrayList<String> value = entry.getValue();
-                addTree(value);
+                recent = addTree(value);
             }
             trees.clear();
+            return recent;
         } catch (Exception e) {
             System.out.println("Failed to create trees!");
             e.printStackTrace();
+            return "asdf";
         }
     }
 

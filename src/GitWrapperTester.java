@@ -3,6 +3,6 @@ public class GitWrapperTester {
         GitWrapper git = new GitWrapper();
         git.init();
 
-        // git.commit("asdf", "asdf");
+        git.commit("JOE", "LOLLLLL");
     }
 }

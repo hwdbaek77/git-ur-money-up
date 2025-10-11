@@ -2,9 +2,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 
 public class GitWrapper {
-
     /**
      * Initializes a new Git repository.
      * This method creates the necessary directory structure
@@ -72,8 +72,21 @@ public class GitWrapper {
      * @return The SHA1 hash of the new commit.
      */
     public String commit(String author, String message) throws Exception {
-        System.out.println();
-        return "";
+        addFileRecursive(new File("./"));
+        Tree.createTrees();
+
+        String currentRootTree = Tree.createTrees();
+
+        String commit = "tree: " + currentRootTree + "\n" +
+                "parent: " + currentRootTree + "\n" +
+                "author: " + author + "\n" +
+                "date: " + LocalDate.now() + "\n" +
+                "summary: " + message;
+
+        Files.writeString(Paths.get("git/HEAD"), Sha1.ofString(commit));
+        Files.writeString(Paths.get("git/objects/" + Sha1.ofString(commit)), commit);
+
+        return Sha1.ofString(commit);
     };
 
     /**

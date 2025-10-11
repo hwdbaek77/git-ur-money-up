@@ -1,5 +1,7 @@
 import java.io.*;
 import java.nio.charset.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Index {
     public static String gitDir = "git";
@@ -8,6 +10,9 @@ public class Index {
 
     // Add a file to the index
     public static String add(File src) throws Exception {
+        if (src != null && Files.readString(Paths.get(indexPath)).contains(src.getName()))
+            return Sha1.ofFile(src);
+
         // Check if the file exists
         if (src == null || !src.isFile())
             throw new IllegalArgumentException("Index.add: source is null or not a file");
