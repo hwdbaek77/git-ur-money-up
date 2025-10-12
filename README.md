@@ -1,7 +1,7 @@
 # JOES UPDATE
 
 1. What bugs did you discover, and which ones did you fix?
-    Chase's and Daniel's code didn't really have any bugs.
+    Chase's tree code sometimes added an extra newline when recreating trees, I think. Totally possible that it was my fault for how I used the method. I fixed that.
 2. What functionality was missing? Did you implement any missing functionality?
     Chase never implemented the create root tree functionality. So I implemented* it.
     *I used ai** to HELP me understand how to implement it but it didn't write the code for me.

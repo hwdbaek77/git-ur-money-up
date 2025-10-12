@@ -12,7 +12,8 @@ public class Blob {
     // Create a blob from a file
     public static String create(File src) throws Exception {
         // Check if the file exists
-        if(src == null | !src.isFile()) throw new IllegalAccessException("Blob.create: source is null or isn't a file");
+        if (src == null | !src.isFile())
+            throw new IllegalAccessException("Blob.create: source is null or isn't a file");
 
         // Create the blob
         try {
@@ -22,7 +23,8 @@ public class Blob {
             if (!compress) {
                 String hash = Sha1.ofFile(src);
                 File out = new File(objectsDir, hash);
-                if(!out.exists()) Files.copy(src.toPath(), out.toPath());
+                if (!out.exists())
+                    Files.copy(src.toPath(), out.toPath());
                 return hash;
             }
 
@@ -32,7 +34,8 @@ public class Blob {
                 byte[] zipped = deflate(raw);
                 String hash = sha1OfBytes(zipped);
                 File out = new File(objectsDir, hash);
-                if(!out.exists()) Files.write(out.toPath(), zipped);
+                if (!out.exists())
+                    Files.write(out.toPath(), zipped);
                 return hash;
             }
         } catch (IOException e) {
@@ -51,26 +54,35 @@ public class Blob {
         }
     }
 
-    // Create a BLOB file without an actual file as input; just a byte array of data
-    public static String create(byte[] data) {
+    // Create a BLOB file without an actual file as input; just a string of data
+    public static String create(String data, boolean isTree) {
         // Create the blob
         try {
             ensureObjectsDir();
 
             // Copy the file to the objects directory
             if (!compress) {
-                String hash = sha1OfBytes(data);
+                String hash = Sha1.ofString(data);
                 File out = new File(objectsDir, hash);
-                if(!out.exists()) Files.write(out.toPath(), data);
+
+                // remove extra newlines added check to fix, only if its a tree
+                // (but don't mess up non-tree stuff).
+                if (isTree) {
+                    data = data.toString().replaceAll("\n\n", "\n");
+                }
+
+                if (!out.exists())
+                    Files.writeString(out.toPath(), data);
                 return hash;
             }
 
             // Compress the file and create a new blob
             else {
-                byte[] zipped = deflate(data);
+                byte[] zipped = deflate(data.getBytes());
                 String hash = sha1OfBytes(zipped);
                 File out = new File(objectsDir, hash);
-                if(!out.exists()) Files.write(out.toPath(), zipped);
+                if (!out.exists())
+                    Files.write(out.toPath(), zipped);
                 return hash;
             }
         } catch (IOException e) {
@@ -82,9 +94,9 @@ public class Blob {
     // Also stages the files
     public static void createDirectory(String directory) {
         try {
-            Stream<File> fileStream =  Files.walk(Paths.get(directory))
-                .filter(Files::isRegularFile)
-                .map(Path::toFile);
+            Stream<File> fileStream = Files.walk(Paths.get(directory))
+                    .filter(Files::isRegularFile)
+                    .map(Path::toFile);
             fileStream.forEach(Blob::safeCreateAndAdd);
             fileStream.close();
         } catch (Exception e) {
@@ -102,15 +114,21 @@ public class Blob {
     public static void ensureObjectsDir() {
         File git = new File(gitDir);
         File objects = new File(objectsDir);
-        if(!git.exists() && !git.mkdirs()) throw new RuntimeException("Failed to create objects directory");
-        if(!objects.exists() && !objects.mkdirs()) throw new RuntimeException("Failed to create objects directory");
-        if(!objects.isDirectory()) throw new RuntimeException("objects directory is not a directory");
+        if (!git.exists() && !git.mkdirs())
+            throw new RuntimeException("Failed to create objects directory");
+        if (!objects.exists() && !objects.mkdirs())
+            throw new RuntimeException("Failed to create objects directory");
+        if (!objects.isDirectory())
+            throw new RuntimeException("objects directory is not a directory");
     }
 
     // Check if all blobs exist
     public static boolean allBlobsExist(String... hashes) {
-        if (hashes == null || hashes.length == 0) return false;
-        for (String h : hashes) if (!blobExists(h)) return false;
+        if (hashes == null || hashes.length == 0)
+            return false;
+        for (String h : hashes)
+            if (!blobExists(h))
+                return false;
         return true;
     }
 
@@ -118,14 +136,19 @@ public class Blob {
     public static void resetForTests(String... hashes) {
         // Ensure that the objects directory exists
         ensureObjectsDir();
-        if (hashes == null) return;
+        if (hashes == null)
+            return;
 
         // Delete all blobs
         for (String h : hashes) {
-            if (h == null || h.isEmpty()) continue;
+            if (h == null || h.isEmpty())
+                continue;
             File f = new File(objectsDir, h);
             if (f.exists() && f.isFile()) {
-                try { Files.deleteIfExists(f.toPath()); } catch (IOException ignored) {}
+                try {
+                    Files.deleteIfExists(f.toPath());
+                } catch (IOException ignored) {
+                }
             }
         }
     }
@@ -150,7 +173,8 @@ public class Blob {
                 buf = bigger;
             }
             // else if (n == 0 && d.finished()) { }
-            else off += n;
+            else
+                off += n;
         }
 
         // Return the compressed output
@@ -169,7 +193,8 @@ public class Blob {
 
             // Convert the digest to a hex string
             StringBuilder sb = new StringBuilder(digest.length * 2);
-            for (byte b : digest) sb.append(String.format("%02x", Byte.toUnsignedInt(b)));
+            for (byte b : digest)
+                sb.append(String.format("%02x", Byte.toUnsignedInt(b)));
             return sb.toString();
         } catch (Exception e) {
             throw new RuntimeException("SHA-1 not available", e); // Should never happen
