@@ -29,7 +29,7 @@ public class Tree {
         for (int i = 0; i < byteArray.length; i++) {
             byteArray[i] = bytes.get(i);
         }
-        return Blob.create(byteArray);
+        return Blob.create(new String(byteArray), true);
     }
 
     // Scans the index file for directories and creates tree files for all of them

@@ -1,13 +1,12 @@
 public class GitWrapperTester {
     public static void main(String[] args) throws Exception {
         GitWrapper git = new GitWrapper();
-        git.init();
+        // git.init();
 
-        git.commit("JOE", "LOLLLLL");
+        // now we're going to add another file
+        // git.add("newFileToAdd");
 
-        // git.add("newCommittedFile");
-        // git.commit("JOE", "added newCommitedFile");
-
-        // git.checkout("d21fc267e8db63038276c484a5dc1c6102d00ab1");
+        // lastly we're going to commit these changes
+        git.commit("Joe", "Commit Message (added newFileToAdd)");
     }
 }
