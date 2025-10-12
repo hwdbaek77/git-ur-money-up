@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.Stack;
 
 public class GitWrapper {
     private String currentRootTreeHash = "";
@@ -74,9 +75,6 @@ public class GitWrapper {
      * @return The SHA1 hash of the new commit.
      */
     public String commit(String author, String message) throws Exception {
-        addFileRecursive(new File("./"));
-        Tree.createTrees();
-
         currentRootTreeHash = Tree.createTrees();
         String commit = "tree: " + currentRootTreeHash + "\n" +
                 "parent: " + Files.readString(Paths.get("git/HEAD")) + "\n" +
@@ -100,8 +98,32 @@ public class GitWrapper {
      *
      * @param commitHash The SHA1 hash of the commit to check out.
      */
-    public void checkout(String commitHash) {
-        // to-do: implement functionality here
+    public void checkout(String commitHash) throws Exception {
+        String curCommitHash = Files.readString(Paths.get("git/HEAD"));
+        String curCommitRootHash = "";
+
+        String prevCommitLine = "";
+        String prevRootLine = "";
+        while (!curCommitHash.equals(commitHash)) {
+            prevCommitLine = Files.readString(Paths.get("git/objects/" + curCommitHash)).split("\n")[1];
+            prevRootLine = Files.readString(Paths.get("git/objects/" + curCommitHash)).split("\n")[0];
+            curCommitHash = prevCommitLine.substring(prevCommitLine.indexOf(": ") + 2);
+            curCommitRootHash = prevRootLine.substring(prevRootLine.indexOf(": ") + 2);
+        }
+        prevCommitLine = Files.readString(Paths.get("git/objects/" + curCommitHash)).split("\n")[1];
+        prevRootLine = Files.readString(Paths.get("git/objects/" + curCommitHash)).split("\n")[0];
+        curCommitHash = prevCommitLine.substring(prevCommitLine.indexOf(": ") + 2);
+        curCommitRootHash = prevRootLine.substring(prevRootLine.indexOf(": ") + 2);
+
+        String targetCommitRootContents = Files.readString(Paths.get("git/objects/" + curCommitRootHash));
+        Stack<String> filesToAdd = new Stack<String>();
+
+        for (String l : targetCommitRootContents.split("\n")) {
+            // this is confusing, but its just finds the hash on that line.
+            filesToAdd.push(l.substring(l.indexOf(" ") + 1, l.substring(l.indexOf(" ") + 1).indexOf(" ")));
+        }
+        // this is as far as I got. it creates a list of all the hashes of the files it
+        // needs to add.
 
     };
 }

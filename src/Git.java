@@ -32,33 +32,6 @@ public class Git {
             System.out.println("Git Repository Creation Failed");
     }
 
-    public static void initRepo() {
-        // Root "git" directory"
-        File gitDir = new File("git");
-        File objectsDir = new File(gitDir, "objects");
-        File indexFile = new File(gitDir, "index");
-        File headFile = new File(gitDir, "HEAD");
-
-        // Check if the repository already exists
-        if (existsDir(gitDir) && existsDir(objectsDir) && existsFile(indexFile) && existsFile(headFile)) {
-            System.out.println("Git Repository Already Exists");
-            return;
-        }
-
-        // Create the repository
-        boolean madeGitDir = mkdir(gitDir);
-        boolean madeObjectsDir = mkdir(objectsDir);
-        boolean madeIndex = touch(indexFile);
-        boolean head = touch(headFile);
-
-        // Check if the repository was created successfully
-        boolean flag = madeGitDir && madeObjectsDir && madeIndex && head;
-        if (flag)
-            System.out.println("Git Repository Created Successfully");
-        else
-            System.out.println("Git Repository Creation Failed");
-    }
-
     // Method to check if a file or directory exists
     public static boolean existsDir(File dir) {
         return dir.exists() && dir.isDirectory();

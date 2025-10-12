@@ -1,3 +1,11 @@
+# JOES UPDATE
+
+1. What bugs did you discover, and which ones did you fix?
+    Chase's and Daniel's code didn't really have any bugs.
+2. What functionality was missing? Did you implement any missing functionality?
+    Chase never implemented the create root tree functionality. So I implemented* it.
+    *I used ai** to HELP me understand how to implement it but it didn't write the code for me.
+    **no other ai was used on this project at all. 
 
 # Git
 
